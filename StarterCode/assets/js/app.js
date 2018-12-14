@@ -29,6 +29,8 @@ d3.csv("assets/data/data.csv").then(function(journalData) {
    // ==============================
   journalData.forEach(function(data) {
     data.id = +data.id;
+    // data.state = +data.state;
+    // data.abbr = +data.abbr;
     data.poverty = +data.poverty;
     data.povertyMoe = +data.povertyMoe;
     data.age = +data.age;
@@ -45,14 +47,12 @@ d3.csv("assets/data/data.csv").then(function(journalData) {
     data.smokesLow = +data.smokesLow;
     data.smokesHigh = +data.smokesHigh;
   });
+  console.log(journalData)
   xmin = (d3.min(journalData, d => parseFloat(d.poverty)) -1)
   xmax = d3.max(journalData, d => parseFloat(d.poverty))
   ymin = (d3.min(journalData, d => parseFloat(d.smokes)) - 1)
   ymax = d3.max(journalData, d => parseFloat(d.smokes))
-  // console.log(xmin);
-  // console.log(xmax);
-  // console.log(ymin);
-  // console.log(ymax);
+
   // Create scale functions
   // ==============================
   var xLinearScale = d3.scaleLinear()
@@ -79,15 +79,25 @@ d3.csv("assets/data/data.csv").then(function(journalData) {
 
    // Create Circles
   // ==============================
-chartGroup.selectAll("circle")
+var tool_tip = d3.tip()
+  .attr("class", "d3-tip")
+  .offset([80, -60])
+  .html(function(d) {
+    return (`${d.state}<br>Poverty: ${d.poverty}<br>Smokes: ${d.smokes}`);
+  });
+svg.call(tool_tip);
+
+var circlesGroup = chartGroup.selectAll("circle")
   .data(journalData)
   .enter()
   .append("circle")
-  .attr("cx", d => xLinearScale(d.poverty))
+  .attr("cx", d => {return xLinearScale(d.poverty)})
   .attr("cy", d => yLinearScale(d.smokes))
   .attr("r", "15")
   .attr("fill", "lightblue")
-  .attr("opacity", ".5");
+  .attr("opacity", ".5")
+  .on('mouseover', tool_tip.show)
+  .on('mouseout', tool_tip.hide);
 
 chartGroup.append("text")
   .style("text-anchor", "middle")
@@ -106,21 +116,21 @@ chartGroup.append("text")
           return data.abbr
       });
 
-// Create axes labels
-chartGroup.append("text")
-.attr("transform", "rotate(-90)")
-.attr("y", 0 - margin.left + 40)
-.attr("x", 0 - (height / 2))
-.attr("dy", "1em")
-.attr("class", "axisText")
-.style("font-weight", "bold")
-.text("Smokes (%)");
+  // Create axes labels
+  chartGroup.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left + 40)
+    .attr("x", 0 - (height / 2))
+    .attr("dy", "1em")
+    .attr("class", "axisText")
+    .style("font-weight", "bold")
+    .text("Smokes (%)");
 
-chartGroup.append("text")
-.attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
-.attr("class", "axisText")
-.style("font-weight", "bold")
-.text("In Poverty (%)");
+  chartGroup.append("text")
+    .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+    .attr("class", "axisText")
+    .style("font-weight", "bold")
+    .text("In Poverty (%)");
+
+//closing of csv read
 });
-
-  
