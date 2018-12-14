@@ -49,9 +49,9 @@ d3.csv("assets/data/data.csv").then(function(journalData) {
   });
   console.log(journalData)
   xmin = (d3.min(journalData, d => parseFloat(d.poverty)) -1)
-  xmax = d3.max(journalData, d => parseFloat(d.poverty))
+  xmax = (d3.max(journalData, d => parseFloat(d.poverty)) +1)
   ymin = (d3.min(journalData, d => parseFloat(d.smokes)) - 1)
-  ymax = d3.max(journalData, d => parseFloat(d.smokes))
+  ymax = (d3.max(journalData, d => parseFloat(d.smokes)) +1)
 
   // Create scale functions
   // ==============================
